@@ -8,19 +8,21 @@ import org.keycloak.representations.idm.{
   UserRepresentation
 }
 
-class KeycloakAdminGatewayImpl(config: Config) extends KeycloakAdminGateway {
+class KeycloakAdminGatewayImpl(val config: Config)
+    extends KeycloakAdminGateway
+    with Credential {
   import collection.JavaConverters._
-  val secret =
-    config.getString("info.akahori_s.keycloacgw.gateway.keycloak.secret")
 
   val realm = "master"
+  val userName = "admin"
+  val clientId = "admin-cli"
 
   val kc = Keycloak.getInstance(
     "http://localhost:8080/auth",
     realm,
-    "admin",
-    "Pa55w0rd",
-    "admin-cli"
+    userName,
+    password(userName),
+    clientId
   )
 
   def createUser(
