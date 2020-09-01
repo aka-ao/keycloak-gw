@@ -42,9 +42,3 @@ curl -i -X POST \
 }' \
  'http://localhost:18080/token'
 ```
-
-- トークン検証
-```curl
-curl -i -X GET \
- 'http://localhost:18080/introspect/$access_token'
-```
