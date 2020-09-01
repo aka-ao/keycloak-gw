@@ -42,3 +42,10 @@ curl -i -X POST \
 }' \
  'http://localhost:18080/token'
 ```
+
+- hello
+```curl
+curl -i -X GET \
+   -H "Authorization:Bearer $token" \
+ 'http://localhost:18080/hello'
+```

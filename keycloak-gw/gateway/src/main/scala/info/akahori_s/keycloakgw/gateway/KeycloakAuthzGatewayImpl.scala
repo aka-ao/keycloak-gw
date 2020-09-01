@@ -25,7 +25,7 @@ case class KeycloakAuthzGatewayImpl(config: Config)
     Token(authzClient.obtainAccessToken(userName, password).getToken)
   }
 
-  def introspect(token: String): String = {
+  def introspect(token: String): Option[String] = {
     val clientId = "sample_api_gateway"
     val configuration: Configuration =
       new Configuration(
@@ -41,9 +41,9 @@ case class KeycloakAuthzGatewayImpl(config: Config)
     val response =
       authzClient.protection(token).introspectRequestingPartyToken(token)
     println(response.getActive)
-    val jwt = JWT.decode(token)
 
-    jwt.getSubject
+    if (response.getActive) Option(JWT.decode(token).getSubject)
+    else None
   }
 
 }

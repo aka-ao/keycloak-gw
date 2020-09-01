@@ -4,5 +4,5 @@ import info.akahori_s.keycloak.utility.model.Token
 
 trait KeycloakAuthzGateway {
   def getAccessToken(userName: String, password: String): Token
-  def introspect(token: String): String
+  def introspect(token: String): Option[String]
 }

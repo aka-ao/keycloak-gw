@@ -7,20 +7,15 @@ import info.akahori_s.keycloak.utility.{
   KeycloakAdminGateway,
   KeycloakAuthzGateway
 }
-import info.akahori_s.keycloakgw.presentation.model.{
-  CreateRequest,
-  IntrospectResponse,
-  JsonSupport,
-  TokenRequest,
-  TokenResponse
-}
+import info.akahori_s.keycloakgw.presentation.model._
 
-class Route(
-    keycloakAdminGateway: KeycloakAdminGateway,
-    keycloakAuthzGateway: KeycloakAuthzGateway
+class RootRoute(
+    val keycloakAdminGateway: KeycloakAdminGateway,
+    val keycloakAuthzGateway: KeycloakAuthzGateway
 )(implicit system: ActorSystem)
     extends Directives
-    with JsonSupport {
+    with JsonSupport
+    with KeycloakAuthenticate {
   def route =
     concat(
       pathPrefix("create") {
@@ -49,11 +44,24 @@ class Route(
             post {
               entity(as[TokenRequest]) { req =>
                 val token =
-                  keycloakAuthzGateway.getAccessToken(
-                    req.userName,
-                    req.password
-                  )
+                  keycloakAuthzGateway
+                    .getAccessToken(req.userName, req.password)
                 complete(OK -> TokenResponse(token))
+              }
+            }
+          }
+        )
+      },
+      pathPrefix("hello") {
+        concat(
+          pathEnd {
+            authorizeToken("sample_service") { subject =>
+              get {
+                complete(
+                  OK -> IntrospectResponse(
+                    subject
+                  )
+                )
               }
             }
           }
